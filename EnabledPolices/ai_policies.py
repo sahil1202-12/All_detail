@@ -1,5 +1,6 @@
 import boto3
 import json
+import os
 
 def list_ai_policies():
     # Create a Boto3 client for AWS Organizations
@@ -11,8 +12,13 @@ def list_ai_policies():
     # Extract the list of policies
     ai_policies = response['Policies']
 
-    # Specify the output folder where JSON files will be stored
-    output_folder = '/home/sahil/Documents/All_detail/output/Policies/ai_policies'
+    # Find the output folder path
+    current_directory = os.getcwd()
+    output_folder = os.path.join(current_directory, 'output', 'Policies', 'ai_policies')
+
+    # Create the output folder if it doesn't exist
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
 
     # Get the details of each AI policy
     for ai_policy in ai_policies:
@@ -24,7 +30,7 @@ def list_ai_policies():
         policy_content_str = policy_response['Policy']['Content']
 
         # Create a separate JSON file for each AI policy in the output folder
-        policy_file_name = f"{output_folder}/{policy_name}.json"
+        policy_file_name = os.path.join(output_folder, f"{policy_name}.json")
 
         # Load the policy content as JSON to format it
         policy_content = json.loads(policy_content_str)
@@ -34,5 +40,3 @@ def list_ai_policies():
             json.dump(policy_content, file, indent=4)
 
         print(f"JSON file generated for policy '{policy_name}'.")
-
-
